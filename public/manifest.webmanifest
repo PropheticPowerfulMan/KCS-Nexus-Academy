@@ -1,0 +1,22 @@
+{
+  "name": "KCS Nexus Academy",
+  "short_name": "KCS Nexus",
+  "description": "The intelligent learning ecosystem of Kinshasa Christian School.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#061523",
+  "theme_color": "#071a2e",
+  "lang": "en",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {"src":"./nexus-app-icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"},
+    {"src":"./kcs.jpg","sizes":"542x481","type":"image/jpeg","purpose":"any"}
+  ],
+  "shortcuts": [
+    {"name":"Teacher Dashboard","short_name":"Dashboard","url":"./"},
+    {"name":"Lesson Studio","short_name":"Lessons","url":"./"}
+  ]
+}
