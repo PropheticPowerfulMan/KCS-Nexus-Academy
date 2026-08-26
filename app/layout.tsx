@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "KCS Nexus Academy",
   description: "The intelligent learning ecosystem of Kinshasa Christian School",
   manifest: `${basePath}/manifest.webmanifest`,
-  icons: { icon: `${basePath}/nexus-app-icon.svg`, apple: `${basePath}/kcs.jpg` },
+  icons: { icon: `${basePath}/nexus-app-icon.svg`, apple: `${basePath}/apple-touch-icon.png` },
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "KCS Nexus" },
 };
 
