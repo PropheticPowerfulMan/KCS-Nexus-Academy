@@ -1,0 +1,4 @@
+import { NextRequest, NextResponse } from "next/server";
+import { ACADEMY_COOKIE, exchangeAcademyTicket } from "@/lib/academy-auth";
+export const runtime = "nodejs";
+export async function GET(request: NextRequest) { const ticket = request.nextUrl.searchParams.get("ticket"); if (!ticket || ticket.length < 32 || ticket.length > 256) return NextResponse.redirect(new URL("/login?error=invalid_ticket", request.url)); const exchange = await exchangeAcademyTicket(ticket); if (!exchange.ok) return NextResponse.redirect(new URL(exchange.status === 403 ? "/forbidden" : "/login?error=session", request.url)); const response = NextResponse.redirect(new URL("/", request.url)); response.cookies.set(ACADEMY_COOKIE, exchange.data.sessionToken, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", expires: new Date(exchange.data.expiresAt) }); return response; }
