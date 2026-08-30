@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Dashboard } from "@/components/dashboard";
+import { RoleDashboard } from "@/components/role-dashboard";
 import { ACADEMY_COOKIE, validateAcademySession } from "@/lib/academy-auth";
 export const dynamic = "force-dynamic";
 export default async function Home() {
@@ -9,5 +10,6 @@ export default async function Home() {
   if (!token) redirect("/login");
   const identity = await validateAcademySession(token);
   if (!identity) redirect("/forbidden");
-  return <Dashboard serverAuthenticated identity={identity} />;
+  if (identity.role === "TEACHER") return <Dashboard serverAuthenticated identity={identity} />;
+  return <RoleDashboard identity={identity} />;
 }
