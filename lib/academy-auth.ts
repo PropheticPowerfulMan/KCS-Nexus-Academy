@@ -2,7 +2,7 @@ import "server-only";
 import { createHmac, scryptSync, timingSafeEqual } from "node:crypto";
 export const ACADEMY_COOKIE = "kcs_academy_session";
 export type AcademyIdentity = { userId: string; orbitId: string; organizationId: string; role: string; expiresAt: string };
-export const ACADEMY_ROLES = new Set(["TEACHER", "ADMIN", "SUPER_ADMIN"]);
+export const ACADEMY_ROLES = new Set(["STUDENT", "TEACHER", "ADMIN", "SUPER_ADMIN"]);
 type LocalAccount = { email: string; accessCode: string; role: string; userId?: string; orbitId?: string; organizationId?: string; salt: string; passwordHash: string };
 function config() { const orbitUrl = process.env.ORBIT_API_URL; const integrationKey = process.env.ACADEMY_INTEGRATION_KEY; if (!orbitUrl || !integrationKey) throw new Error("Academy SSO is not configured"); return { orbitUrl: orbitUrl.replace(/\/$/, ""), integrationKey }; }
 function localSecret() { return process.env.ACADEMY_LOCAL_SESSION_SECRET || ""; }
