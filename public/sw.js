@@ -1,4 +1,4 @@
-const CACHE_NAME="kcs-nexus-v2";
+const CACHE_NAME="kcs-nexus-v3";
 const scopeUrl=new URL(self.registration.scope);
 const shell=[new URL("./manifest.webmanifest",scopeUrl).href,new URL("./nexus-app-icon.svg",scopeUrl).href,new URL("./kcs.jpg",scopeUrl).href,new URL("./pwa-192.png",scopeUrl).href,new URL("./pwa-512.png",scopeUrl).href,new URL("./apple-touch-icon.png",scopeUrl).href];
 self.addEventListener("install",event=>{event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(shell)).then(()=>self.skipWaiting()))});

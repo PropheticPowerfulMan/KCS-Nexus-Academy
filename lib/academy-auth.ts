@@ -1,7 +1,7 @@
 import "server-only";
 import { createHmac, scryptSync, timingSafeEqual } from "node:crypto";
 export const ACADEMY_COOKIE = "kcs_academy_session";
-export type AcademyIdentity = { userId: string; orbitId: string; organizationId: string; role: string; expiresAt: string };
+export type AcademyIdentity = { userId: string; orbitId: string; organizationId: string; role: string; displayName?: string; expiresAt: string };
 export const ACADEMY_ROLES = new Set(["STUDENT", "TEACHER", "ADMIN", "SUPER_ADMIN"]);
 type LocalAccount = { email: string; accessCode: string; role: string; userId?: string; orbitId?: string; organizationId?: string; salt: string; passwordHash: string };
 function config() { const orbitUrl = process.env.ORBIT_API_URL; const integrationKey = process.env.ACADEMY_INTEGRATION_KEY; if (!orbitUrl || !integrationKey) throw new Error("Academy SSO is not configured"); return { orbitUrl: orbitUrl.replace(/\/$/, ""), integrationKey }; }
@@ -15,7 +15,7 @@ function validateLocalSession(token: string): AcademyIdentity | null {
   try { const payload = JSON.parse(Buffer.from(parts[1], "base64url").toString("utf8")) as AcademyIdentity & { exp: number };
     if (!payload.exp || payload.exp <= Date.now() || !ACADEMY_ROLES.has(payload.role)) return null;
     const organization = process.env.ACADEMY_ORGANIZATION_ID; if (organization && payload.organizationId !== organization) return null;
-    return { userId: payload.userId, orbitId: payload.orbitId, organizationId: payload.organizationId, role: payload.role, expiresAt: payload.expiresAt };
+    return { userId: payload.userId, orbitId: payload.orbitId, organizationId: payload.organizationId, role: payload.role, displayName: payload.displayName, expiresAt: payload.expiresAt };
   } catch { return null; }
 }
 export function authenticateLocalAcademyAccount(identifier: string, password: string): LocalAccount | null {
