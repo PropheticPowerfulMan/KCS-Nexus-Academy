@@ -8,7 +8,8 @@ import {
   Sun, Target, TrendingUp, Users, X
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { DigitalLibrary, InstallApp } from "./dashboard";
+import { AcademyCourses, DigitalLibrary, InstallApp } from "./dashboard";
+import type { AcademyContext } from "@/lib/academy-auth";
 
 type Identity = { userId: string; orbitId: string; organizationId: string; role: string; displayName?: string };
 type Icon = typeof Home;
@@ -70,7 +71,7 @@ function ModuleView({module,language,onAction}:{module:{eyebrow:string;title:str
   </section>;
 }
 
-export function RoleDashboard({identity}:{identity:Identity}) {
+export function RoleDashboard({identity,context}:{identity:Identity;context?:AcademyContext|null}) {
   const admin=["ADMIN","SUPER_ADMIN"].includes(identity.role);
   const nav=admin?adminNav:studentNav;
   const modules=admin?adminModules:studentModules;
@@ -85,14 +86,17 @@ export function RoleDashboard({identity}:{identity:Identity}) {
   const visible=useMemo(()=>nav.filter(x=>(language==="en"?x.en:x.fr).toLowerCase().includes(query.toLowerCase())),[nav,query,language]);
   const name=identity.displayName || (admin?t("KCS Administrator","Administrateur KCS"):t("KCS Learner","Élève KCS"));
   const current=nav.find(x=>x.key===active)??nav[0];
+  const liveCourses=context?.courses??[];
+  const liveAssignments=liveCourses.reduce((sum,course)=>sum+course.assignments.length,0);
+  const population=context?.population;
 
   const overview=admin?<section className="role-overview">
     <div className="role-hero admin-hero"><div><small>KCS ACADEMY · LEADERSHIP COMMAND CENTER</small><h1>{t("Lead learning with clarity.","Piloter lapprentissage avec clarté.")}</h1><p>{t("A governed view of curriculum quality, teaching readiness, learner growth, and the actions that move KCS forward.","Une vue gouvernée de la qualité des programmes, de la préparation pédagogique, de la progression et des actions qui font avancer KCS.")}</p></div><button onClick={()=>setActive("analytics")}><BarChart3/>{t("Open evidence center","Ouvrir le centre de preuves")}</button></div>
-    <div className="role-kpis">{[["245",t("Learners","Élèves"),"81% on track"],["15",t("Grade levels","Niveaux"),"K3 · K4 · K5 · G1G12"],["92%",t("Lesson readiness","Leçons prêtes"),"+4% this week"],["19",t("Active interventions","Interventions actives"),"6 high priority"]].map(x=><article key={x[1]}><small>{x[1]}</small><b>{x[0]}</b><p>{x[2]}</p></article>)}</div>
+    <div className="role-kpis">{[[String(population?.students??0),t("Learners","Élèves"),t("Official institutional profiles","Profils institutionnels officiels")],[String(population?.parents??0),t("Parents","Parents"),t("Across the KCS ecosystem","Dans tout ecosysteme KCS")],[String(population?.teachers??0),t("Teachers","Enseignants"),t("Active Nexus profiles","Profils Nexus actifs")],[String(population?.courses??0),t("Official courses","Cours officiels"),t("Created in KCS Nexus","Créés dans KCS Nexus")]].map(x=><article key={x[1]}><small>{x[1]}</small><b>{x[0]}</b><p>{x[2]}</p></article>)}</div>
     <div className="role-columns"><article><header><div><small>ACADEMIC PULSE</small><h2>{t("What needs leadership attention","Ce qui demande lattention de la direction")}</h2></div><button onClick={()=>setActive("analytics")}>{t("View all","Tout voir")}</button></header>{[["Grade 8 science standards","74% coverage","curriculum"],["Assessment moderation","8 reviews due","operations"],["Grade 11 mathematics","+9% mastery growth","learners"]].map(x=><button key={x[0]} onClick={()=>setActive(x[2])}><span><CheckCircle2/></span><p><b>{x[0]}</b><small>{x[1]}</small></p><ChevronRight/></button>)}</article><aside><small>KCS ACADEMY INTELLIGENCE</small><h2>{t("From school data to human decisions","Des données scolaires aux décisions humaines")}</h2><p>{t("Evidence is explained, decisions remain human, and every action has an owner.","Les preuves sont expliquées, les décisions restent humaines et chaque action a un responsable.")}</p><button onClick={()=>setActive("ai")}><Sparkles/>{t("Open intelligence","Ouvrir lintelligence")}</button></aside></div>
   </section>:<section className="role-overview">
     <div className="role-hero student-hero"><div><small>KCS ACADEMY · MY LEARNING JOURNEY</small><h1>{t("Learn deeply. Grow faithfully.","Apprendre en profondeur. Grandir avec fidélité.")}</h1><p>{t("Your courses, deadlines, progress, reading, and next best learning step  together in one calm workspace.","Tes cours, échéances, progrès, lectures et prochaine étape  réunis dans un espace clair.")}</p></div><button onClick={()=>setActive("courses")}><BookOpen/>{t("Continue learning","Continuer à apprendre")}</button></div>
-    <div className="role-kpis">{[["7",t("Active courses","Cours actifs"),"Current term"],["4",t("Assignments due","Devoirs à remettre"),"Next 7 days"],["78%",t("Overall mastery","Maîtrise globale"),"+6% this term"],["5",t("Day study streak","Jours consécutifs"),"Personal best: 9"]].map(x=><article key={x[1]}><small>{x[1]}</small><b>{x[0]}</b><p>{x[2]}</p></article>)}</div>
+    <div className="role-kpis">{[[String(liveCourses.length),t("Active courses","Cours actifs"),t("Official Nexus enrollments","Inscriptions officielles Nexus")],[String(liveAssignments),t("Assignments","Devoirs"),t("From assigned courses","Cours attribués")],[context?.profile?.grade??"—",t("Grade","Classe"),context?.profile?.section??""],[context?.profile?.studentNumber??"—",t("Student number","Matricule"),t("Verified identity","Identité vérifiée")]].map(x=><article key={x[1]}><small>{x[1]}</small><b>{x[0]}</b><p>{x[2]}</p></article>)}</div>
     <div className="role-columns"><article><header><div><small>TODAY</small><h2>{t("My next learning steps","Mes prochaines étapes")}</h2></div><button onClick={()=>setActive("calendar")}>{t("Calendar","Calendrier")}</button></header>{[["Mathematics","Continue quadratic equations","courses"],["English","Submit reading reflection","assignments"],["Biology","Prepare cells mastery check","assessments"]].map(x=><button key={x[0]} onClick={()=>setActive(x[2])}><span><CheckCircle2/></span><p><b>{x[0]}</b><small>{x[1]}</small></p><ChevronRight/></button>)}</article><aside><small>STUDY COACH AI</small><h2>{t("Understand the process, not just the answer","Comprendre la démarche, pas seulement la réponse")}</h2><p>{t("Get explanations, practice, and a study plan designed around your focus skills.","Obtiens des explications, des exercices et un plan adapté à tes compétences prioritaires.")}</p><button onClick={()=>setActive("ai")}><Bot/>{t("Open study coach","Ouvrir le coach")}</button></aside></div>
   </section>;
 
@@ -106,7 +110,7 @@ export function RoleDashboard({identity}:{identity:Identity}) {
     </aside>
     <main className="role-main">
       <header><button className="role-menu" onClick={()=>setMenu(true)}><Menu/></button><div><small>{admin?t("ADMINISTRATION","ADMINISTRATION"):t("STUDENT","ÉLÈVE")}</small><b>{language==="en"?current.en:current.fr}</b></div><div className="role-head-actions"><button onClick={()=>setLanguage(language==="en"?"fr":"en")}><Languages/><b>{language.toUpperCase()}</b></button><button onClick={()=>setDark(!dark)}>{dark?<Sun/>:<Moon/>}</button><button onClick={()=>show(t("No critical notification","Aucune notification critique"))}><Bell/></button><form action="/api/auth/logout" method="post"><button aria-label="Logout"><LogOut/></button></form></div></header>
-      <div className="role-content">{active==="overview"?overview:active==="library"?<DigitalLibrary note={show} language={language}/>:<ModuleView module={modules[active]} language={language} onAction={show}/>}</div>
+      <div className="role-content">{active==="overview"?overview:active==="library"?<DigitalLibrary note={show} language={language}/>:active==="courses"&&!admin?<AcademyCourses context={context} language={language}/>:<ModuleView module={modules[active]} language={language} onAction={show}/>}</div>
     </main>
     <InstallApp language={language}/>{toast&&<div className="role-toast"><CheckCircle2/>{toast}</div>}
   </div>;

@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Dashboard } from "@/components/dashboard";
 import { RoleDashboard } from "@/components/role-dashboard";
-import { ACADEMY_COOKIE, validateAcademySession } from "@/lib/academy-auth";
+import { ACADEMY_COOKIE, getAcademyContext, validateAcademySession } from "@/lib/academy-auth";
 export const dynamic = "force-dynamic";
 export default async function Home() {
   if (process.env.ACADEMY_DEMO_MODE === "true" && process.env.NODE_ENV !== "production") return <Dashboard />;
@@ -10,6 +10,7 @@ export default async function Home() {
   if (!token) redirect("/login");
   const identity = await validateAcademySession(token);
   if (!identity) redirect("/forbidden");
-  if (identity.role === "TEACHER") return <Dashboard serverAuthenticated identity={identity} />;
-  return <RoleDashboard identity={identity} />;
+  const context = await getAcademyContext(identity);
+  if (identity.role === "TEACHER") return <Dashboard serverAuthenticated identity={identity} context={context} />;
+  return <RoleDashboard identity={identity} context={context} />;
 }
