@@ -8,7 +8,7 @@ import {
   Sun, Target, TrendingUp, Users, X
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { AcademyCourses, DigitalLibrary, InstallApp } from "./dashboard";
+import { AcademyCourses, AcademySchedule, DigitalLibrary, InstallApp } from "./dashboard";
 import type { AcademyContext } from "@/lib/academy-auth";
 
 type Identity = { userId: string; orbitId: string; organizationId: string; role: string; displayName?: string };
@@ -19,6 +19,7 @@ const adminNav: Item[] = [
   { key:"overview", en:"Executive overview", fr:"Vue exécutive", icon:Home },
   { key:"curriculum", en:"Curriculum & standards", fr:"Programmes et standards", icon:Target, badge:"12" },
   { key:"courses", en:"Course catalog", fr:"Catalogue des cours", icon:BookOpen },
+  { key:"calendar", en:"Daily timetable", fr:"Horaire quotidien", icon:CalendarDays },
   { key:"operations", en:"Academic operations", fr:"Opérations académiques", icon:ClipboardCheck, badge:"8" },
   { key:"faculty", en:"Faculty readiness", fr:"Suivi des enseignants", icon:Users },
   { key:"learners", en:"Learner success", fr:"Réussite des élèves", icon:GraduationCap },
@@ -110,7 +111,7 @@ export function RoleDashboard({identity,context}:{identity:Identity;context?:Aca
     </aside>
     <main className="role-main">
       <header><button className="role-menu" onClick={()=>setMenu(true)}><Menu/></button><div><small>{admin?t("ADMINISTRATION","ADMINISTRATION"):t("STUDENT","ÉLÈVE")}</small><b>{language==="en"?current.en:current.fr}</b></div><div className="role-head-actions"><button onClick={()=>setLanguage(language==="en"?"fr":"en")}><Languages/><b>{language.toUpperCase()}</b></button><button onClick={()=>setDark(!dark)}>{dark?<Sun/>:<Moon/>}</button><button onClick={()=>show(t("No critical notification","Aucune notification critique"))}><Bell/></button><form action="/api/auth/logout" method="post"><button aria-label="Logout"><LogOut/></button></form></div></header>
-      <div className="role-content">{active==="overview"?overview:active==="library"?<DigitalLibrary note={show} language={language}/>:active==="courses"&&!admin?<AcademyCourses context={context} language={language}/>:<ModuleView module={modules[active]} language={language} onAction={show}/>}</div>
+      <div className="role-content">{active==="overview"?overview:active==="library"?<DigitalLibrary note={show} language={language}/>:active==="calendar"?<AcademySchedule context={context} language={language}/>:active==="courses"&&!admin?<AcademyCourses context={context} language={language}/>:<ModuleView module={modules[active]} language={language} onAction={show}/>}</div>
     </main>
     <InstallApp language={language}/>{toast&&<div className="role-toast"><CheckCircle2/>{toast}</div>}
   </div>;
