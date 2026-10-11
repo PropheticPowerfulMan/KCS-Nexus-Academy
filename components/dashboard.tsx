@@ -15,7 +15,61 @@ const englishTranslations:Record<string,string>={
 "KCS NEXUS INTELLIGENCE":"KCS NEXUS INTELLIGENCE","Assistant IA enseignant":"Teacher AI Assistant","Préparez une leçon, créez un exercice ou analysez une progression avec l’aide de KCS Nexus.":"Prepare a lesson, create an activity, or analyze progress with KCS Nexus.","Comment puis-je vous aider aujourd’hui ?":"How can I help you today?","Les contenus générés restent des propositions à vérifier avant publication.":"Generated content remains a suggestion and must be reviewed before publishing.","Générer":"Generate","Créer un plan de leçon":"Create a lesson plan","Générer un quiz":"Generate a quiz","Différencier une activité":"Differentiate an activity","Analyser les résultats":"Analyze results","Saisissez d’abord votre demande":"Enter your request first",
 "Du signal à l’action":"From signal to action","Comprenez chaque alerte, vérifiez les preuves et coordonnez une intervention humaine.":"Understand every alert, verify the evidence, and coordinate human intervention.","Données synchronisées":"Data synchronized","Maîtrise":"Mastery","Interventions":"Interventions","Scénarios":"Scenarios","INSIGHT PRIORITAIRE":"PRIORITY INSIGHT","Examiner les preuves":"Review evidence","ÉLÈVES À ACCOMPAGNER":"STUDENTS NEEDING SUPPORT","risques élevés":"high risk","modérés":"moderate","cette semaine":"this week","INTERVENTIONS ACTIVES":"ACTIVE INTERVENTIONS","progressent":"improving","à revoir":"to review","efficaces":"effective","Élèves nécessitant une attention":"Students needing attention","Priorisation transparente, jamais décision automatique.":"Transparent prioritization, never an automated decision.","Générer le rapport":"Generate report","Niveau d’attention":"Attention level","Pourquoi ce signal ?":"Why this signal?","Source vérifiable dans le dossier académique":"Verifiable source in the academic record","Décision humaine requise":"Human decision required","Créer un plan d’accompagnement":"Create a support plan","Pulse de la classe":"Class pulse","Engagement":"Engagement","Assiduité":"Attendance","Explorer un scénario":"Explore a scenario","Carte vivante des compétences":"Live mastery map","Voir les critères":"View criteria","Lecture suggérée":"Suggested interpretation","Suggestion IA":"AI suggestion","à valider par l’enseignant":"teacher review required","Préparer une intervention":"Prepare intervention","Plans d’accompagnement":"Support plans","Nouveau plan":"New plan","SIMULATEUR PÉDAGOGIQUE":"LEARNING SIMULATOR","Et si nous ajoutions du temps de remédiation ?":"What if we added remediation time?","Sessions supplémentaires par semaine":"Additional sessions per week","Petits groupes":"Small groups","Tutorat individuel":"Individual tutoring","Pratique autonome":"Independent practice","PROJECTION SUR 4 SEMAINES":"4-WEEK PROJECTION","Maîtrise actuelle":"Current mastery","Maîtrise estimée":"Estimated mastery","Transformer en plan d’action":"Turn into an action plan",
 "STUDIO DE LEÇON":"LESSON STUDIO","Équations quadratiques":"Quadratic equations","minutes":"minutes","Présenter":"Present","Aperçu":"Overview","Séquence":"Sequence","Différenciation":"Differentiation","Séquence pédagogique":"Learning sequence","Construisez le déroulé utilisé pendant le cours.":"Build the sequence used during class.","Ajouter une étape":"Add step","Introduction":"Introduction","Présentation":"Presentation","Vidéo":"Video","Pratique guidée":"Guided practice","Évaluation":"Assessment","QUALITÉ PÉDAGOGIQUE":"INSTRUCTIONAL QUALITY","Objectifs d’apprentissage":"Learning objectives","Modifier les objectifs":"Edit objectives","Différencier avec l’IA":"Differentiate with AI","Simple":"Foundation","Standard":"Standard","Avancé":"Advanced","Intention pédagogique":"Learning intent","Déroulement":"Lesson flow","Ressources liées":"Linked resources","Essentiel":"Foundation","Approfondissement":"Extension","Carte de maîtrise":"Mastery map","MODE PRÉSENTATION":"PRESENTATION MODE","Quitter":"Exit","Précédent":"Previous","Suivant":"Next","Mode clair":"Light mode","Mode sombre":"Dark mode","Activer le mode clair":"Enable light mode","Activer le mode sombre":"Enable dark mode","Afficher le menu":"Show menu","Masquer le menu":"Hide menu"};
-function useInterfaceLanguage(language:"en"|"fr"){useEffect(()=>{const pairs=Object.entries(englishTranslations);const translate=(value:string)=>{let next=value;const source=language==="en"?pairs:pairs.map(([fr,en])=>[en,fr]);for(const[from,to]of source)next=next.split(from).join(to);return next};let applying=false;const apply=()=>{if(applying)return;applying=true;const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let node:Node|null;while((node=walker.nextNode())){const parent=node.parentElement;if(!parent||["SCRIPT","STYLE"].includes(parent.tagName))continue;const next=translate(node.nodeValue??"");if(next!==node.nodeValue)node.nodeValue=next}document.querySelectorAll<HTMLElement>("[placeholder],[title],[aria-label]").forEach(el=>{for(const attr of["placeholder","title","aria-label"]){const value=el.getAttribute(attr);if(value){const next=translate(value);if(next!==value)el.setAttribute(attr,next)}}});applying=false};apply();const observer=new MutationObserver(()=>queueMicrotask(apply));observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:["placeholder","title","aria-label"]});return()=>observer.disconnect()},[language])}
+function useInterfaceLanguage(language:"en"|"fr"){
+  useEffect(()=>{
+    const pairs=Object.entries(englishTranslations);
+    const sourcePairs=language==="en"?pairs:pairs.map(([fr,en])=>[en,fr]);
+    const translate=(value:string)=>sourcePairs.reduce((next,[from,to])=>next.split(from).join(to),value);
+    const textSources=new WeakMap<Node,{source:string;rendered:string}>();
+    const attributeSources=new WeakMap<HTMLElement,Map<string,{source:string;rendered:string}>>();
+    let applying=false;
+    let queued=false;
+
+    const apply=()=>{
+      queued=false;
+      if(applying)return;
+      applying=true;
+      try{
+        const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+        let node:Node|null;
+        while((node=walker.nextNode())){
+          const parent=node.parentElement;
+          if(!parent||["SCRIPT","STYLE"].includes(parent.tagName))continue;
+          const current=node.nodeValue??"";
+          const previous=textSources.get(node);
+          const source=!previous||current!==previous.rendered?current:previous.source;
+          const rendered=translate(source);
+          textSources.set(node,{source,rendered});
+          if(current!==rendered)node.nodeValue=rendered;
+        }
+        document.querySelectorAll<HTMLElement>("[placeholder],[title],[aria-label]").forEach(el=>{
+          const states=attributeSources.get(el)??new Map<string,{source:string;rendered:string}>();
+          for(const attr of["placeholder","title","aria-label"]){
+            const current=el.getAttribute(attr);
+            if(current===null)continue;
+            const previous=states.get(attr);
+            const source=!previous||current!==previous.rendered?current:previous.source;
+            const rendered=translate(source);
+            states.set(attr,{source,rendered});
+            if(current!==rendered)el.setAttribute(attr,rendered);
+          }
+          attributeSources.set(el,states);
+        });
+      }finally{
+        applying=false;
+      }
+    };
+    const scheduleApply=()=>{
+      if(queued)return;
+      queued=true;
+      queueMicrotask(apply);
+    };
+    apply();
+    const observer=new MutationObserver(scheduleApply);
+    observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:["placeholder","title","aria-label"]});
+    return()=>observer.disconnect();
+  },[language]);
+}
 export function Dashboard({serverAuthenticated=false,institutionalMode=false,identity,context}:{serverAuthenticated?:boolean;institutionalMode?:boolean;identity?:{userId:string;orbitId:string;organizationId:string;role:string;displayName?:string};context?:AcademyContext|null}){const[dark,setDark]=useState(false);const[language,setLanguage]=useState<"en"|"fr">("en");const[authenticated,setAuthenticated]=useState(serverAuthenticated);const[authReady,setAuthReady]=useState(serverAuthenticated);const[menu,setMenu]=useState(false);const[collapsed,setCollapsed]=useState(false);const[search,setSearch]=useState(false);const[toast,setToast]=useState("");const[active,setActive]=useState("Vue d’ensemble");
 useInterfaceLanguage(language);useEffect(()=>{if(institutionalMode){setAuthenticated(false);setAuthReady(true)}else if(!serverAuthenticated){setAuthenticated(localStorage.getItem("kcs-demo-session")==="active");setAuthReady(true)}},[serverAuthenticated,institutionalMode]);useEffect(()=>{const savedLanguage=localStorage.getItem("kcs-language");if(savedLanguage==="fr"||savedLanguage==="en")setLanguage(savedLanguage);const saved=localStorage.getItem("kcs-theme");setDark(saved?saved==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches)},[]);
 useEffect(()=>{document.documentElement.style.colorScheme=dark?"dark":"light"},[dark]);

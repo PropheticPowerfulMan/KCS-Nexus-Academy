@@ -99,3 +99,12 @@ button,a,input,select{touch-action:manipulation}
 .academy-error-state h1 { margin: 12px 0; font-size: 26px; }
 .academy-error-state p { color: #a8c3d3; line-height: 1.6; }
 .academy-error-state button { margin-top: 18px; border: 0; border-radius: 10px; padding: 12px 18px; background: #54d5ff; color: #061523; font-weight: 800; cursor: pointer; }
+
+/* Compact mobile typography: preserve 16px form controls to avoid iOS auto-zoom. */
+@media screen and (max-width:767px){
+  html{font-size:14px;text-size-adjust:100%;-webkit-text-size-adjust:100%}
+  body{line-height:1.45}
+  :where(.welcome,.module-head,.studio-top,.intel-head,.role-hero,.role-module-head,.library-hero) h1{font-size:clamp(1.25rem,5.2vw,1.5rem)!important;line-height:1.18}
+  :where(.panel,.module,.role-content,.digital-library) :where(h2,h3){line-height:1.25}
+  :where(input:not([type=checkbox]):not([type=radio]),select,textarea){font-size:16px!important}
+}
