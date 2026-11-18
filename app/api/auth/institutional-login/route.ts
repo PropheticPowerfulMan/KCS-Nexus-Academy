@@ -4,13 +4,14 @@ export async function POST(request: NextRequest) {
   const form = await request.formData();
   const identifier = String(form.get("identifier") || "").trim();
   const password = String(form.get("password") || "");
+  const twoFactorCode=String(form.get("twoFactorCode")||"");
   if (!identifier || !password || identifier.length > 254 || password.length > 256) return NextResponse.redirect(new URL("/login?error=invalid", request.url), 303);
   const nexusApi = process.env.NEXUS_API_URL;
   if (!nexusApi) return NextResponse.redirect(new URL("/login?error=unavailable", request.url), 303);
-  const login = await fetch(nexusApi.replace(/\/$/, "") + "/api/auth/login", {
+  const login = await fetch(nexusApi.replace(/\/$/, "") + "/api/auth/application/login", {
     method: "POST", cache: "no-store",
     headers: { "content-type": "application/json", "x-kcs-local-auth-only": "true" },
-    body: JSON.stringify({ identifier, password })
+    body: JSON.stringify({ identifier, password, twoFactorCode:twoFactorCode||undefined, application:"KCS_ACADEMY" })
   });
   if (!login.ok) return NextResponse.redirect(new URL("/login?error=credentials", request.url), 303);
   const payload = await login.json() as { data?: { token?: string } };
