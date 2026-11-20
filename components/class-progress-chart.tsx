@@ -1,0 +1,4 @@
+"use client";
+import {Area,AreaChart,CartesianGrid,ResponsiveContainer,Tooltip,XAxis,YAxis} from "recharts";
+const chart=[{n:"S1",v:68},{n:"S2",v:72},{n:"S3",v:70},{n:"S4",v:78},{n:"S5",v:76},{n:"S6",v:84}];
+export default function ClassProgressChart(){return <ResponsiveContainer width="100%" height="100%"><AreaChart data={chart} margin={{top:5,right:8,left:-25,bottom:0}}><defs><linearGradient id="fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#009fe0" stopOpacity=".32"/><stop offset="1" stopColor="#009fe0" stopOpacity="0"/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--line)"/><XAxis dataKey="n" axisLine={false} tickLine={false}/><YAxis domain={[50,100]} axisLine={false} tickLine={false}/><Tooltip/><Area type="monotone" dataKey="v" stroke="#009fe0" strokeWidth={3} fill="url(#fill)"/></AreaChart></ResponsiveContainer>;}
