@@ -1,6 +1,8 @@
-const CACHE_NAME="kcs-nexus-v3";
-const scopeUrl=new URL(self.registration.scope);
-const shell=[new URL("./manifest.webmanifest",scopeUrl).href,new URL("./nexus-app-icon.svg",scopeUrl).href,new URL("./kcs.jpg",scopeUrl).href,new URL("./pwa-192.png",scopeUrl).href,new URL("./pwa-512.png",scopeUrl).href,new URL("./apple-touch-icon.png",scopeUrl).href];
-self.addEventListener("install",event=>{event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(shell)).then(()=>self.skipWaiting()))});
-self.addEventListener("activate",event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE_NAME).map(key=>caches.delete(key)))).then(()=>self.clients.claim()))});
-self.addEventListener("fetch",event=>{if(event.request.method!=="GET")return;event.respondWith(fetch(event.request).then(response=>{if(response.ok&&event.request.mode!=="navigate"&&new URL(event.request.url).origin===location.origin){const copy=response.clone();caches.open(CACHE_NAME).then(cache=>cache.put(event.request,copy))}return response}).catch(()=>caches.match(event.request))) });
+const CACHE_NAME='kcs-academy-live-v4';
+const assets=['/manifest.webmanifest','/nexus-app-icon.svg','/kcs.jpg','/pwa-192.png','/pwa-512.png','/apple-touch-icon.png'];
+self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(assets)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME&&k!=='kcs-library-v1').map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',event=>{const url=new URL(event.request.url);if(event.request.method!=='GET'||url.origin!==location.origin||event.request.mode==='navigate'||url.pathname.startsWith('/api/'))return;
+ if(!assets.includes(url.pathname)&&!url.pathname.startsWith('/_next/static/')&&!url.pathname.startsWith('/library/'))return;
+ event.respondWith(fetch(event.request).then(response=>{if(response.ok&&!/private|no-store/i.test(response.headers.get('cache-control')||'')){const copy=response.clone();event.waitUntil(caches.open(CACHE_NAME).then(c=>c.put(event.request,copy)))}return response}).catch(()=>caches.match(event.request).then(r=>r||Response.error())));
+});
