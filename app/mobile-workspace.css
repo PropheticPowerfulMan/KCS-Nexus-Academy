@@ -1,0 +1,26 @@
+
+@media screen and (max-width:767px){
+.app{font-size:12px}.app .content{padding:15px 11px}.app .welcome{margin-bottom:14px}.app .welcome h1{font-size:22px;line-height:1.15}.app .welcome p{font-size:10px;line-height:1.5}
+.app header{height:57px!important;padding:0 10px!important}.app .headright>button{width:32px;height:35px}.app .search{min-height:35px}.app .search kbd{font-size:9px}.app .user>span{width:30px;height:30px}
+.app .brief{padding:14px;border-radius:14px;gap:10px}.app .brief h2{font-size:16px}.app .brief p{font-size:10px;line-height:1.5}.app .brief button{font-size:10px;min-height:35px}
+.app .stats{gap:8px}.app .stat{padding:11px;min-height:77px;border-radius:12px}.app .stat b{font-size:23px}.app .stat small{font-size:10px}.app .stat p{font-size:9px}
+.app .module-head{margin-bottom:16px;gap:8px}.app .module-head h1{font-size:22px}.app .module-head p{font-size:10px;line-height:1.5}.app .module-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.app .module-stats article{padding:10px;display:block;min-width:0}.app .module-stats article b{font-size:21px}.app .module-stats article small{font-size:9px}.app .module-stats article span{font-size:8px}
+.app .panel{border-radius:14px}.app .panel h2{font-size:14px}.app .panel p{font-size:11px}
+.app .academy-classes .academy-course-card{padding:14px;border-radius:15px}.app .academy-classes .academy-course-card h2{font-size:16px}.app .academy-course-icon{width:34px;height:34px;border-radius:10px}.app .academy-course-facts{gap:6px;margin:12px 0}.app .academy-course-facts span{padding:5px 7px;font-size:10px}.app .academy-course-description{font-size:11px!important;line-height:1.5;margin:11px 0!important}.app .academy-course-teacher{font-size:10px}
+.app :is(input,select,textarea){font-size:16px!important;min-height:40px}.app button{min-height:36px}.app .data-panel td{font-size:11px;padding:7px 0}.app .data-panel td:last-child{display:flex!important;gap:7px;flex-wrap:wrap}.app .data-panel td:last-child button{font-size:10px}
+.app .side{width:min(290px,86vw)}.app .side nav button{min-height:43px;padding:10px 14px}.app .academy-class-tools{gap:7px}.app .academy-class-tools select{height:40px}.app .academy-result-count{font-size:10px;margin:12px 0}
+}
+@media screen and (min-width:768px) and (max-width:1023px){.app .content{padding:22px 19px}.app .academy-classes .academy-course-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.app .academy-classes .academy-course-card{padding:16px}.app .academy-course-card h2{font-size:17px}.app .module-head h1{font-size:25px}}
+
+/* The non-teacher workspaces use their own shell and receive the same compact treatment. */
+@media screen and (max-width:767px){
+.role-app{font-size:12px;min-width:0}.role-content{padding:14px 11px!important}
+.role-main>header{padding:10px 11px!important;gap:8px;min-height:61px}.role-main>header>div:not(.role-head-actions){min-width:0;max-width:110px}.role-main>header>div>b{font-size:12px;line-height:1.35}.role-main>header>div>small{font-size:7px}
+.role-head-actions{display:flex;max-width:59vw;min-width:0;overflow-x:auto;gap:4px;align-items:center;scrollbar-width:thin}.role-head-actions>button:nth-child(3){display:grid}.role-head-actions>*{flex-shrink:0}.role-head-actions button{width:32px;min-width:32px;height:35px;min-height:35px;padding:6px}.role-head-actions a{font-size:9px;white-space:nowrap;padding:7px 9px}.role-head-actions form{margin:0}
+.role-hero{padding:18px!important;border-radius:16px!important;gap:14px}.role-hero h1{font-size:24px!important;line-height:1.15}.role-hero p{font-size:11px!important;line-height:1.6}.role-hero small{font-size:8px}.role-hero>button{min-height:36px;font-size:10px;padding:9px 12px}
+.role-kpis,.role-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}.role-kpis>*,.role-stat-grid>*{padding:12px!important;min-width:0;border-radius:13px!important}.role-kpis b,.role-stat-grid b{font-size:23px!important}.role-kpis small,.role-stat-grid small{font-size:10px}
+.role-columns{gap:12px!important}.role-columns>section,.role-panel,.role-workbench{padding:14px!important;border-radius:14px!important}.role-content h2{font-size:17px}.role-content h3{font-size:14px}.role-content p{font-size:11px;line-height:1.55}.role-module-head h1{font-size:22px}
+.role-content :is(input,select,textarea){font-size:16px!important;min-height:40px}.role-content :is(button,a){font-size:11px;min-height:36px}.role-side{width:min(290px,86vw)}.role-side nav button{min-height:43px;font-size:12px}.role-content table{font-size:11px}
+}
+
+@media screen and (max-width:760px){.role-side:not(.open){visibility:hidden;pointer-events:none}}

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./schedule-legibility.css";
 import "./academy-workspace.css";
+import "./mobile-workspace.css";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
