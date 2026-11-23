@@ -1577,3 +1577,11 @@ html:has(.ac-dark), .ac-dark *, .ac-dark .ac-dialog {
 .ac-library-upload{margin-top:20px;border:1px solid var(--ac-border,#486079);border-radius:14px;padding:16px}.ac-library-upload>summary{display:flex;gap:10px;align-items:center;font-weight:750;cursor:pointer}.ac-library-upload .ac-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:15px}.ac-library-upload label{display:grid;gap:7px}.ac-library-upload input{min-width:0;max-width:100%;background:transparent;color:inherit;border:1px solid #64788e;border-radius:9px;padding:9px}.ac-library-dialog footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}.ac-library-dialog footer p{max-width:55ch;font-size:11px}.ac-library-row>div{min-width:0}.ac-library-row h3,.ac-library-row p{overflow-wrap:anywhere}@media(max-width:640px){.ac-library-upload .ac-form-grid{grid-template-columns:1fr}.ac-library-row{flex-wrap:wrap}.ac-library-actions{width:100%}}
 
 .ac-library-dialog>header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.ac-library-dialog>header h2{font-size:20px;line-height:1.3;overflow-wrap:anywhere}.ac-library-dialog>header .ac-icon{flex:none}.ac-library-dialog>footer{margin-top:15px;border-top:1px solid var(--ac-line);padding-top:12px}
+
+/* One native page scroll owner. A body overflow port with standalone
+   overscroll:none used to swallow wheel/touch chaining to the viewport. */
+html:has(.ac-app),html:has(.ac-login) { overflow-x:hidden; overflow-y:auto; scroll-padding-top:85px; }
+body:has(.ac-app),body:has(.ac-login) { overflow:visible; overscroll-behavior-y:auto; }
+.ac-app,.ac-login { touch-action:pan-x pan-y pinch-zoom; }
+.ac-sidebar { overscroll-behavior-y:contain; }
+.ac-dialog:not([open]) { display:none; }
