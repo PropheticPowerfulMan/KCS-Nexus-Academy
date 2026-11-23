@@ -1,206 +1,23 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import {
-  ArrowDownToLine,
-  BookOpen,
-  Check,
-  Download,
-  Eye,
-  LoaderCircle,
-  Search,
-  WifiOff,
-  X,
-} from "lucide-react";
-const books = [
-  {
-    title: "A First Book in Algebra",
-    author: "Wallace C. Boyden",
-    file: "first-book-algebra.pdf",
-  },
-  {
-    title: "A History of Mathematics",
-    author: "Florian Cajori",
-    file: "history-of-mathematics.pdf",
-  },
-  {
-    title: "The Elements of Euclid",
-    author: "Euclid · John Casey",
-    file: "euclid-elements.pdf",
-  },
-  {
-    title: "Le Tour du monde en 80 jours",
-    author: "Jules Verne",
-    file: "tour-du-monde.txt",
-  },
-];
-export function AcademyLibrary({ lang }: { lang: "fr" | "en" }) {
-  const [query, setQuery] = useState(""),
-    [selected, setSelected] = useState<(typeof books)[number] | null>(null),
-    [saved, setSaved] = useState<string[]>([]),
-    [saving, setSaving] = useState(""),
-    [error, setError] = useState("");
-  const dialog = useRef<HTMLDialogElement>(null),
-    L = (fr: string, en: string) => (lang === "fr" ? fr : en);
-  useEffect(() => {
-    if ("caches" in window)
-      caches
-        .open("kcs-library-v1")
-        .then((c) => c.keys())
-        .then((keys) =>
-          setSaved(
-            keys.map((k) => new URL(k.url).pathname.split("/").pop() || ""),
-          ),
-        )
-        .catch(() => {});
-  }, []);
-  useEffect(() => {
-    if (selected) dialog.current?.showModal();
-  }, [selected]);
-  async function save(file: string) {
-    setSaving(file);
-    setError("");
-    try {
-      if (!("caches" in window)) throw new Error();
-      const cache = await caches.open("kcs-library-v1");
-      await cache.add("/library/" + file);
-      setSaved((v) => [...new Set([...v, file])]);
-    } catch {
-      setError(
-        L(
-          "Enregistrement hors connexion impossible. Réessayez avec une connexion stable.",
-          "Unable to save offline. Retry with a stable connection.",
-        ),
-      );
-    } finally {
-      setSaving("");
-    }
-  }
-  const shown = books.filter((b) =>
-    (b.title + " " + b.author)
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
-      .includes(
-        query
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .toLowerCase(),
-      ),
-  );
-  return (
-    <section className="ac-panel">
-      <div className="ac-section-title">
-        <div>
-          <h2>{L("Bibliothèque de référence", "Reference library")}</h2>
-          <p>
-            {L(
-              "Ouvrages du domaine public. Ces ressources ne sont pas des données scolaires.",
-              "Public-domain books. These reference resources are not school records.",
-            )}
-          </p>
-        </div>
-      </div>
-      <label className="ac-search">
-        <Search size={17} />
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={L(
-            "Rechercher un livre ou un auteur",
-            "Search a book or author",
-          )}
-        />
-      </label>
-      {error && (
-        <p className="ac-alert" role="alert">
-          {error}
-        </p>
-      )}
-      {shown.map((b) => (
-        <article className="ac-library-row" key={b.file}>
-          <BookOpen size={24} />
-          <div>
-            <h3>{b.title}</h3>
-            <p>{b.author}</p>
-          </div>
-          <div className="ac-library-actions">
-            <button
-              className="ac-button ac-quiet"
-              onClick={() => setSelected(b)}
-            >
-              <Eye size={15} />
-              {L("Lire", "Read")}
-            </button>
-            <button
-              className="ac-button ac-quiet"
-              disabled={Boolean(saving) || saved.includes(b.file)}
-              onClick={() => void save(b.file)}
-            >
-              {saving === b.file ? (
-                <LoaderCircle className="ac-spin" size={15} />
-              ) : saved.includes(b.file) ? (
-                <Check size={15} />
-              ) : (
-                <WifiOff size={15} />
-              )}{" "}
-              {saved.includes(b.file)
-                ? L("Disponible hors ligne", "Available offline")
-                : L("Conserver hors ligne", "Save offline")}
-            </button>
-            <a
-              className="ac-button ac-quiet"
-              href={"/library/" + b.file}
-              download
-            >
-              <ArrowDownToLine size={15} />
-              {L("Télécharger", "Download")}
-            </a>
-          </div>
-        </article>
-      ))}
-      {!shown.length && (
-        <p className="ac-empty">
-          {L("Aucun livre trouvé.", "No matching books.")}
-        </p>
-      )}
-      <dialog
-        ref={dialog}
-        className="ac-dialog ac-book-reader"
-        onClose={() => setSelected(null)}
-      >
-        {selected && (
-          <>
-            <div className="ac-section-title">
-              <div>
-                <h2>{selected.title}</h2>
-                <p>{selected.author}</p>
-              </div>
-              <button
-                className="ac-icon"
-                aria-label={L("Fermer", "Close")}
-                onClick={() => dialog.current?.close()}
-              >
-                <X />
-              </button>
-            </div>
-            <iframe title={selected.title} src={"/library/" + selected.file} />
-            <p className="ac-footnote">
-              {L(
-                "Si votre appareil ne propose pas l’aperçu, téléchargez le livre pour l’ouvrir.",
-                "If your device cannot preview this book, download it to open it.",
-              )}
-            </p>
-            <a
-              className="ac-button"
-              href={"/library/" + selected.file}
-              download
-            >
-              <Download size={16} />
-              {L("Télécharger", "Download")}
-            </a>
-          </>
-        )}
-      </dialog>
-    </section>
-  );
+import {useEffect,useRef,useState} from 'react';
+import {BookOpen,Search,Eye,Download,WifiOff,Check,LoaderCircle,RefreshCw,Upload,X} from 'lucide-react';
+import {AcademyBookReader,prepareBookReaderOffline} from './academy-book-reader';
+type Book={id:string;title:string;author:string;file?:string;filename?:string;mime?:string;reference?:boolean;withdrawn?:boolean;revision?:number;scope:string};
+export function AcademyLibrary({lang}:{lang:'fr'|'en'}){
+ const L=(a:string,b:string)=>lang==='fr'?a:b;
+ const [books,setBooks]=useState<Book[]>([]),[manager,setManager]=useState(false),[query,setQuery]=useState(''),[selected,setSelected]=useState<Book|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[saved,setSaved]=useState<string[]>([]),[title,setTitle]=useState(''),[author,setAuthor]=useState(''),[file,setFile]=useState<File|null>(null),[notice,setNotice]=useState('');const dialog=useRef<HTMLDialogElement>(null);
+ const url=(b:Book)=>b.file?'/library/'+encodeURIComponent(b.file):'/api/library/'+encodeURIComponent(b.id)+'/file';
+ async function load(){setBusy(true);setError('');try{const r=await fetch('/api/library',{cache:'no-store'}),b=await r.json();if(!r.ok||!b.data)throw new Error();setBooks(b.data.rows.filter((b:Book)=>b.scope==='LIBRARY'));setManager(b.data.manager);}catch{setError(L('La bibliothèque est indisponible. Réessayez : aucun catalogue fictif ne remplace les données.','Library unavailable. Retry: no demo catalog replaces school data.'));}finally{setBusy(false);}}
+ useEffect(()=>{void load();if('caches' in window)void caches.open('kcs-library-v1').then(c=>c.keys()).then(keys=>setSaved(keys.map(k=>new URL(k.url).pathname))).catch(()=>{});},[]);
+ useEffect(()=>{if(selected)dialog.current?.showModal();else dialog.current?.close()},[selected]);
+ async function save(b:Book){if(!b.file)return;setBusy(true);try{await(await caches.open('kcs-library-v1')).add(url(b));if(b.file.endsWith('.pdf'))await prepareBookReaderOffline();setSaved(v=>[...v,url(b)]);}catch{setError(L('Conservation hors ligne impossible. Réessayez.','Unable to save offline. Please retry.'));}finally{setBusy(false)}}
+ async function publish(){if(!file)return;setBusy(true);setError('');try{const body=new FormData();body.append('file',file);body.append('title',title);body.append('author',author);body.append('scope','LIBRARY');body.append('recipientIds','[]');const r=await fetch('/api/library',{method:'POST',body});if(!r.ok)throw new Error();setTitle('');setAuthor('');setFile(null);setNotice(L('Livre publié dans la bibliothèque KCS.','Book published in the KCS library.'));await load();}catch{setError(L('Publication impossible. PDF ou TXT requis, 15 Mo maximum.','Publishing failed. PDF or TXT required, maximum 15 MB.'));}finally{setBusy(false)}}
+ async function withdraw(b:Book){if(!confirm(b.withdrawn?L('Restaurer ce livre ?','Restore this book?'):L('Retirer ce livre ? L’historique sera conservé.','Withdraw this book? History will be retained.')))return;setBusy(true);try{const r=await fetch('/api/library/'+encodeURIComponent(b.id),{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({revision:b.revision||0,withdrawn:!b.withdrawn})});if(!r.ok)throw new Error();await load();}catch{setError(L('Modification impossible. Actualisez avant de réessayer.','Unable to update. Refresh before retrying.'));}finally{setBusy(false)}}
+ const norm=(s:string)=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(),shown=books.filter(b=>norm(b.title+' '+b.author).includes(norm(query)));
+ return <section className="ac-panel"><div className="ac-section-title"><div><h2>{L('Bibliothèque KCS','KCS library')}</h2><p>{L('Ouvrages publiés par le ST et ressources de référence.','ST-published books and reference resources.')}</p></div><button className="ac-button ac-quiet" disabled={busy} onClick={()=>void load()}><RefreshCw size={16}/>{L('Actualiser','Refresh')}</button></div>
+ <label className="ac-search"><Search size={17}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder={L('Rechercher un livre ou un auteur','Search a book or author')}/></label>{error&&<p className="ac-alert" role="alert">{error}</p>}{notice&&<p role="status" className="ac-alert">{notice}</p>}{busy&&<p role="status"><LoaderCircle className="ac-spin" size={17}/>{L('Chargement…','Loading…')}</p>}
+ {shown.map(b=><article className="ac-library-row" key={b.id}><BookOpen size={24}/><div><h3>{b.title}</h3><p>{b.author}{b.withdrawn?' · '+L('Retiré','Withdrawn'):''}</p></div><div className="ac-library-actions">{!b.withdrawn&&<><button className="ac-button ac-quiet" onClick={()=>setSelected(b)}><Eye size={15}/>{L('Lire','Read')}</button><a className="ac-button ac-quiet" href={url(b)} download={b.filename||b.file}><Download size={15}/>{L('Télécharger','Download')}</a>{b.file&&<button className="ac-button ac-quiet" disabled={busy||saved.includes(url(b))} onClick={()=>void save(b)}>{saved.includes(url(b))?<Check size={15}/>:<WifiOff size={15}/>} {saved.includes(url(b))?L('Disponible hors ligne','Available offline'):L('Conserver hors ligne','Save offline')}</button>}</>}{manager&&<button className="ac-button ac-quiet" disabled={busy} onClick={()=>void withdraw(b)}>{b.withdrawn?L('Restaurer','Restore'):L('Retirer','Withdraw')}</button>}</div></article>)}{!busy&&!shown.length&&!error&&<p>{L('Aucun livre pour cette recherche.','No books match this search.')}</p>}
+ {manager&&<details className="ac-library-upload"><summary><Upload size={17}/>{L('Ajouter un livre · ST','Add a book · ST')}</summary><div className="ac-form-grid"><label>{L('Titre','Title')}<input value={title} maxLength={300} onChange={e=>setTitle(e.target.value)}/></label><label>{L('Auteur / source autorisée','Author / authorized source')}<input value={author} maxLength={300} onChange={e=>setAuthor(e.target.value)}/></label><label>PDF / TXT · 15 MB<input key={file?.name||'empty'} type="file" accept=".pdf,.txt" onChange={e=>setFile(e.target.files?.[0]||null)}/></label><button className="ac-button" disabled={busy||!file||!title.trim()} onClick={()=>void publish()}><Upload size={16}/>{L('Publier le livre','Publish book')}</button></div></details>}
+ <dialog ref={dialog} className="ac-dialog ac-book-reader ac-library-dialog" onCancel={e=>{e.preventDefault();setSelected(null)}}><header><h2>{selected?.title}</h2><button className="ac-icon" aria-label={L('Fermer','Close')} onClick={()=>setSelected(null)}><X size={18}/></button></header>{selected&&<AcademyBookReader file={url(selected)} format={(selected.filename||selected.file||'').toLowerCase().endsWith('.txt')?'text':'pdf'} title={selected.title} lang={lang}/>}<footer><p>{L('Lecture intégrée sécurisée. Les livres scolaires privés ne sont pas conservés dans le cache public.','Secure integrated reader. Private school books are not kept in the public cache.')}</p>{selected&&<a className="ac-button" href={url(selected)} download={selected.filename||selected.file}><Download size={15}/>{L('Télécharger','Download')}</a>}</footer></dialog>
+ </section>
 }

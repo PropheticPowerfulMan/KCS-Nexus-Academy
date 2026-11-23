@@ -158,6 +158,7 @@ export function AcademyWorkspace({
   identity: AcademyIdentity;
   initialContext: AcademyContext | null;
 }) {
+  const [menuQuery, setMenuQuery] = useState("");
   const [ready, setReady] = useState(false);
   useEffect(() => {
     setReady(true);
@@ -431,15 +432,21 @@ export function AcademyWorkspace({
                 : L("Espace enseignant", "Teacher workspace")}
           </span>
         </div>
+        <div className="ac-menu-finder">
+          <div className="ac-menu-caption"><span>{L("Votre espace", "Your workspace")}</span><span>{nav.length}</span></div>
+          <label className="ac-menu-search"><Search size={16}/><input type="search" value={menuQuery} onChange={e => setMenuQuery(e.target.value)} placeholder={L("Trouver une rubrique…", "Find a section…")} aria-label={L("Rechercher dans le menu", "Search menu")} autoComplete="off"/>{menuQuery && <button className="ac-menu-clear" aria-label={L("Effacer la recherche", "Clear search")} onClick={() => setMenuQuery("")}><X size={14}/></button>}</label>
+        </div>
         <nav>
-          {nav.map((n) => (
+          {nav.filter(n => normalize(n.label).includes(normalize(menuQuery))).map((n) => (
             <button
               key={n.id}
               title={n.label}
+              aria-label={n.label}
               disabled={!ready}
               aria-current={tab === n.id ? "page" : undefined}
               onClick={() => {
                 setMobile(false);
+                setMenuQuery("");
                 setTab(n.id as Tab);
               }}
             >
@@ -455,10 +462,12 @@ export function AcademyWorkspace({
           <NexusReturnLink language={lang} role={identity.role} />
           <button
             className="ac-collapse"
-            onClick={() => setCollapsed(!collapsed)}
+            aria-label={collapsed ? L("Agrandir le menu", "Expand menu") : L("Réduire le menu", "Collapse menu")}
+            title={collapsed ? L("Agrandir le menu", "Expand menu") : L("Réduire le menu", "Collapse menu")}
+            onClick={() => { setMenuQuery(""); setCollapsed(!collapsed); }}
           >
             <PanelLeftClose size={17} />
-            <span>{L("Réduire le menu", "Collapse menu")}</span>
+            <span>{collapsed ? L("Agrandir le menu", "Expand menu") : L("Réduire le menu", "Collapse menu")}</span>
           </button>
           <form
             action="/api/auth/logout"
