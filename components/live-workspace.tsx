@@ -1548,11 +1548,8 @@ export function AcademySignIn() {
             {L("Entrer dans Academy", "Enter Academy")}
             <ArrowUpRight size={18} />
           </button>
-          <a href={nexus + "/application-access?app=KCS_ACADEMY"}>
-            {L(
-              "Modifier ou récupérer mon mot de passe Academy",
-              "Change or recover my Academy password",
-            )}
+          <a className="ac-recovery-link" href={nexus + "/application-access?app=KCS_ACADEMY"}>
+            <LockKeyhole size={19} aria-hidden="true"/><span><strong>{L("Mot de passe Academy", "Academy password")}</strong><small>{L("Modifier ou récupérer mon accès", "Change or recover my access")}</small></span><ArrowUpRight size={17} aria-hidden="true"/>
           </a>
           <a className="ac-link" href={nexus + "/login"}>
             <ArrowLeft size={15} />
