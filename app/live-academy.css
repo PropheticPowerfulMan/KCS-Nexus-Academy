@@ -1585,3 +1585,5 @@ body:has(.ac-app),body:has(.ac-login) { overflow:visible; overscroll-behavior-y:
 .ac-app,.ac-login { touch-action:pan-x pan-y pinch-zoom; }
 .ac-sidebar { overscroll-behavior-y:contain; }
 .ac-dialog:not([open]) { display:none; }
+
+.ac-recovery-link{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--ac-line);border-radius:14px;background:var(--ac-soft);color:var(--ac-ink);text-decoration:none;min-width:0;max-width:100%;transition:border-color .15s,box-shadow .15s}.ac-recovery-link>svg{flex-shrink:0;color:var(--ac-brand)}.ac-recovery-link>span{display:grid;gap:3px;flex:1;min-width:0}.ac-recovery-link strong{font-size:12px;line-height:1.4}.ac-recovery-link small{font-size:11px;line-height:1.5;color:var(--ac-muted);overflow-wrap:anywhere}.ac-recovery-link:hover,.ac-recovery-link:focus-visible{border-color:var(--ac-brand);box-shadow:0 0 0 3px #7a9db42a;outline:none}
