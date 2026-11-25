@@ -13,7 +13,7 @@ export function AccessNotice({ retry }: { retry?: () => void }) {
   return (
     <main className={"ac-login" + (dark ? " ac-dark" : "")}>
       <header>
-        <a className="ac-brand" href="https://kinshasachristianschool.org">
+        <a className="ac-brand" href="https://kinshasachristianschool.org" target="_blank" rel="noopener noreferrer">
           <img src="/kcs.jpg" alt="KCS" />
           <span>
             <b>ACADEMY</b>
@@ -57,7 +57,7 @@ export function AccessNotice({ retry }: { retry?: () => void }) {
             {fr ? "Se connecter" : "Sign in"}
           </a>
         )}
-        <a className="ac-link" href="https://kinshasachristianschool.org">
+        <a className="ac-link" href="https://kinshasachristianschool.org" target="_blank" rel="noopener noreferrer">
           <ArrowLeft size={16} />
           {fr ? "Retour à Nexus AI" : "Back to Nexus AI"}
         </a>

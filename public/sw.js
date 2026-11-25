@@ -1,4 +1,4 @@
-const CACHE_NAME='kcs-academy-live-v5';
+const CACHE_NAME='kcs-academy-live-v6-native-leadership';
 const assets=['/manifest.webmanifest','/nexus-app-icon.svg','/kcs.jpg','/pwa-192.png','/pwa-512.png','/apple-touch-icon.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(assets)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('kcs-academy-')&&k!==CACHE_NAME).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));

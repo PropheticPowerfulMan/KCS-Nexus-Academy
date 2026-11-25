@@ -12,6 +12,7 @@
     "minimal-ui"
   ],
   "orientation": "any",
+  "launch_handler": {"client_mode":"navigate-existing"},
   "background_color": "#f3f4f7",
   "theme_color": "#142d48",
   "lang": "en",

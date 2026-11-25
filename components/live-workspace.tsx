@@ -459,7 +459,7 @@ export function AcademyWorkspace({
           ))}
         </nav>
         <div className="ac-sidebar-bottom">
-          <NexusReturnLink language={lang} role={identity.role} />
+          <NexusReturnLink language={lang} role={identity.role} returnPath={identity.nexusReturnPath} />
           <button
             className="ac-collapse"
             aria-label={collapsed ? L("Agrandir le menu", "Expand menu") : L("Réduire le menu", "Collapse menu")}
@@ -834,11 +834,11 @@ export function AcademyWorkspace({
                       <ArrowUpRight size={16} />
                     </button>
                   )}
-                  <a className="ac-link" href={nexusPath("assignments")}>
+                  <a className="ac-link" href={nexusPath("assignments")} target="_blank" rel="noopener noreferrer">
                     {L("Devoirs dans Nexus AI", "Assignments in Nexus AI")}
                     <ArrowUpRight size={15} />
                   </a>
-                  <a className="ac-link" href={nexusPath("messages")}>
+                  <a className="ac-link" href={nexusPath("messages")} target="_blank" rel="noopener noreferrer">
                     {L("Ma messagerie Nexus", "My Nexus messages")}
                     <ArrowUpRight size={15} />
                   </a>
@@ -996,7 +996,7 @@ export function AcademyWorkspace({
                 </h2>
                 <a
                   className="ac-button ac-quiet"
-                  href={nexusPath("assignments")}
+                  href={nexusPath("assignments")} target="_blank" rel="noopener noreferrer"
                 >
                   {student
                     ? L("Résoudre mes devoirs", "Work on my assignments")
@@ -1274,7 +1274,7 @@ export function AcademyWorkspace({
               </div>
               <a
                 className="ac-button"
-                href={nexus + "/application-access?app=KCS_ACADEMY"}
+                href={nexus + "/application-access?app=KCS_ACADEMY"} target="_blank" rel="noopener noreferrer"
               >
                 <LockKeyhole size={16} />
                 {L(
@@ -1392,7 +1392,7 @@ export function AcademyWorkspace({
                   )}
                   <a
                     className="ac-button"
-                    href={nexusPath(student ? "assignments" : "courses")}
+                    href={nexusPath(student ? "assignments" : "courses")} target="_blank" rel="noopener noreferrer"
                   >
                     {L("Continuer dans Nexus", "Continue in Nexus")}
                     <ArrowUpRight size={16} />
@@ -1548,10 +1548,10 @@ export function AcademySignIn() {
             {L("Entrer dans Academy", "Enter Academy")}
             <ArrowUpRight size={18} />
           </button>
-          <a className="ac-recovery-link" href={nexus + "/application-access?app=KCS_ACADEMY"}>
+          <a className="ac-recovery-link" href={nexus + "/application-access?app=KCS_ACADEMY"} target="_blank" rel="noopener noreferrer">
             <LockKeyhole size={19} aria-hidden="true"/><span><strong>{L("Mot de passe Academy", "Academy password")}</strong><small>{L("Modifier ou récupérer mon accès", "Change or recover my access")}</small></span><ArrowUpRight size={17} aria-hidden="true"/>
           </a>
-          <a className="ac-link" href={nexus + "/login"}>
+          <a className="ac-link" href={nexus + "/login"} target="_blank" rel="noopener noreferrer">
             <ArrowLeft size={15} />
             {L("Retour à Nexus AI", "Back to Nexus AI")}
           </a>
