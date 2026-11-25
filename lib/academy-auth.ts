@@ -1,3 +1,4 @@
+import {applyAcademyAccess,type AcademicWorkspace} from './academy-role';
 import "server-only";
 export const ACADEMY_COOKIE = "kcs_academy_session";
 export type AcademyIdentity = {
@@ -9,6 +10,9 @@ export type AcademyIdentity = {
   displayName?: string;
   email?: string;
   expiresAt: string;
+  nexusUserId?: string;
+  nexusWorkspace?: AcademicWorkspace;
+  nexusReturnPath?: string;
 };
 export const ACADEMY_ROLES = new Set([
   "STUDENT",
@@ -36,19 +40,33 @@ async function orbitRequest(path: string, body: object) {
     body: JSON.stringify(body),
   });
 }
+async function nexusSession(operation:string,body:object){
+ const base=process.env.NEXUS_API_URL,key=process.env.ACADEMY_INTEGRATION_KEY;if(!base||!key)throw new Error('Academy SSO unavailable');
+ return fetch(base.replace(/\/$/,'')+'/api/academy/nexus-session/'+operation,{method:'POST',cache:'no-store',headers:{'content-type':'application/json','x-api-key':key},body:JSON.stringify(body),signal:AbortSignal.timeout(10000)});
+}
 export async function validateAcademySession(
   token: string,
 ): Promise<AcademyIdentity | null> {
+  if(token.startsWith("nxacad_")){const r=await nexusSession("validate",{token});if(!r.ok)return null;const b=await r.json();return b.data as AcademyIdentity;}
   const response = await orbitRequest("validate", { token });
   if (!response.ok) return null;
   const identity = (await response.json()) as AcademyIdentity;
   if (!ACADEMY_ROLES.has(identity.role)) return null;
   const organization = process.env.ACADEMY_ORGANIZATION_ID;
-  return organization && identity.organizationId !== organization
-    ? null
-    : identity;
+  if (organization && identity.organizationId !== organization) return null;
+  const nexusUrl=process.env.NEXUS_API_URL,key=process.env.ACADEMY_INTEGRATION_KEY;
+  if(!nexusUrl||!key)return null;
+  const access=await fetch(nexusUrl.replace(/\/$/,'')+'/api/academy/access',{
+    method:'POST',cache:'no-store',signal:AbortSignal.timeout(10000),
+    headers:{'content-type':'application/json','x-api-key':key},
+    body:JSON.stringify({orbitId:identity.sourceIdentityId||identity.orbitId}),
+  });
+  if(!access.ok)return null;
+  const payload=await access.json();
+  return applyAcademyAccess(identity,payload.data);
 }
-export async function exchangeAcademyTicket(ticket: string) {
+export async function exchangeAcademyTicket(ticket: string, issuer?: string) {
+  if(issuer==="nexus"){const r=await nexusSession("exchange",{ticket});return r.ok?{ok:true as const,data:(await r.json()).data as {sessionToken:string;expiresAt:string;identity:AcademyIdentity}}:{ok:false as const,status:r.status};}
   const response = await orbitRequest("exchange", { ticket });
   if (!response.ok) return { ok: false as const, status: response.status };
   return {
@@ -61,6 +79,7 @@ export async function exchangeAcademyTicket(ticket: string) {
   };
 }
 export async function revokeAcademySession(token: string) {
+  if(token.startsWith("nxacad_")){await nexusSession("revoke",{token});return;}
   await orbitRequest("revoke", { token });
 }
 export type AcademyCourse = {
@@ -197,7 +216,7 @@ export async function getAcademyContext(
         body: JSON.stringify({
           email: identity.email,
           role: identity.role,
-          orbitId: identity.sourceIdentityId || identity.orbitId,
+          ...(identity.nexusUserId?{nexusUserId:identity.nexusUserId}:{orbitId: identity.sourceIdentityId || identity.orbitId}),
           ...scope,
         }),
       },
