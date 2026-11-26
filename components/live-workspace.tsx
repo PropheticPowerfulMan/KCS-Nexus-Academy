@@ -1409,15 +1409,20 @@ export function AcademySignIn() {
   const { lang, setLang, dark, setDark } = usePreferences(),
     [show, setShow] = useState(false),
     [busy, setBusy] = useState(false),
-    [error, setError] = useState(false);
+    [error, setError] = useState(false),
+    [requestedWorkspace,setRequestedWorkspace]=useState('');
   const L = (fr: string, en: string) => text(fr, en, lang);
   useEffect(() => {
-    setError(new URLSearchParams(location.search).has("error"));
+    const query=new URLSearchParams(location.search);
+    setError(query.has('error'));const selected=query.get('workspace')||'';
+    setRequestedWorkspace(['teacher','principal','senior','superadmin','student'].includes(selected)?selected:'');
+    if(['fr','en'].includes(query.get('lang')||''))setLang(query.get('lang') as Lang);
+    if(['light','dark'].includes(query.get('theme')||''))setDark(query.get('theme')==='dark');
   }, []);
   return (
     <main className={"ac-login" + (dark ? " ac-dark" : "")}>
       <header>
-        <a className="ac-brand" href={nexus}>
+        <a className="ac-brand" href={nexus} target="_blank" rel="noopener noreferrer">
           <img src="/kcs.jpg" alt="KCS" />
           <span>
             <b>ACADEMY</b>
@@ -1467,6 +1472,7 @@ export function AcademySignIn() {
           method="post"
           onSubmit={() => setBusy(true)}
         >
+          <input type="hidden" name="workspace" value={requestedWorkspace}/>
           <span className="ac-course-glyph">
             <ShieldCheck size={26} />
           </span>
