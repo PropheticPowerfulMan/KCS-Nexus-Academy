@@ -1,3 +1,4 @@
+import MandatoryUpdateLoader from '../components/MandatoryUpdateLoader';
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./schedule-legibility.css";
@@ -24,5 +25,5 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({children}:Readonly<{children:React.ReactNode}>){
-  return <html lang="en" suppressHydrationWarning><body>{children}</body></html>;
+  return <html lang="en" suppressHydrationWarning><body><MandatoryUpdateLoader/>{children}</body></html>;
 }
